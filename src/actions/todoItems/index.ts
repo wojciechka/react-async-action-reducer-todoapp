@@ -37,6 +37,7 @@ export const create = createActionAndReducer<ITodoItem, ITodoItemEntry>({
       ...(data as ITodoItem),
     };
 
+    // simulate delayed applying of changes
     await wait(DELAY);
     localItems.push(dataEntry);
     return dataEntry;
@@ -48,6 +49,9 @@ export const update = createActionAndReducer<ITodoItemEntry, void>({
   // trigger a refresh of the list
   clearOtherData: [list.prefix],
   perform: async (data?: ITodoItemEntry) => {
+    // simulate delayed applying of changes
+    await wait(DELAY);
+
     if (data) {
       localItems = localItems.map(row => row.id === data.id ? data : row);
     }
@@ -59,6 +63,9 @@ export const remove = createActionAndReducer<ITodoItemEntry, void>({
   // trigger a refresh of the list
   clearOtherData: [list.prefix],
   perform: async (data?: ITodoItemEntry) => {
+    // simulate delayed applying of changes
+    await wait(DELAY);
+
     if (data) {
       localItems = localItems.filter(row => row.id !== data.id);
     }
