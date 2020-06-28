@@ -48,11 +48,20 @@ export const update = createActionAndReducer<ITodoItemEntry, void>({
   // trigger a refresh of the list
   clearOtherData: [list.prefix],
   perform: async (data?: ITodoItemEntry) => {
-    console.log('PERFORM1', localItems, data);
     if (data) {
       localItems = localItems.map(row => row.id === data.id ? data : row);
     }
-    console.log('PERFORM2', localItems, data);
+  },
+});
+
+export const remove = createActionAndReducer<ITodoItemEntry, void>({
+  prefix: 'todoItems.remove',
+  // trigger a refresh of the list
+  clearOtherData: [list.prefix],
+  perform: async (data?: ITodoItemEntry) => {
+    if (data) {
+      localItems = localItems.filter(row => row.id !== data.id);
+    }
   },
 });
 
@@ -60,9 +69,11 @@ export const todoItems = {
   list,
   create,
   update,
+  remove,
   reducers: {
     ...list.reducer,
     ...create.reducer,
     ...update.reducer,
+    ...remove.reducer,
   }
 };
