@@ -27,6 +27,21 @@ export const list = createActionAndReducer<{}, ITodoItemEntry[]>({
   },
 });
 
+export const get = createActionAndReducer<number, ITodoItemEntry | undefined>({
+  prefix: 'todoItems.get',
+  dataIsKey: true,
+  perform: async (data?: number) => {
+    // simulate delayed retrieval of data
+    await wait(DELAY);
+    const matching = localItems.filter(row => row.id === data);
+    if (matching.length === 1) {
+      return matching[0];
+    } else {
+      return undefined;
+    }
+  },
+});
+
 export const create = createActionAndReducer<ITodoItem, ITodoItemEntry>({
   prefix: 'todoItems.create',
   // trigger a refresh of the list
@@ -46,8 +61,8 @@ export const create = createActionAndReducer<ITodoItem, ITodoItemEntry>({
 
 export const update = createActionAndReducer<ITodoItemEntry, void>({
   prefix: 'todoItems.update',
-  // trigger a refresh of the list
-  clearOtherData: [list.prefix],
+  // trigger a refresh of the list or get operations on change
+  clearOtherData: [list.prefix, get.prefix],
   perform: async (data?: ITodoItemEntry) => {
     // simulate delayed applying of changes
     await wait(DELAY);
@@ -60,8 +75,8 @@ export const update = createActionAndReducer<ITodoItemEntry, void>({
 
 export const remove = createActionAndReducer<ITodoItemEntry, void>({
   prefix: 'todoItems.remove',
-  // trigger a refresh of the list
-  clearOtherData: [list.prefix],
+  // trigger a refresh of the list or get operations on change
+  clearOtherData: [list.prefix, get.prefix],
   perform: async (data?: ITodoItemEntry) => {
     // simulate delayed applying of changes
     await wait(DELAY);
@@ -74,11 +89,13 @@ export const remove = createActionAndReducer<ITodoItemEntry, void>({
 
 export const todoItems = {
   list,
+  get,
   create,
   update,
   remove,
   reducers: {
     ...list.reducer,
+    ...get.reducer,
     ...create.reducer,
     ...update.reducer,
     ...remove.reducer,

@@ -4,7 +4,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { actions } from './actions';
 import { ITodoItemEntry } from './types';
 
-const TodoItemsList: React.SFC = () => {
+export interface ITodoItemsListProps {
+  onRowSelected?: (row: ITodoItemEntry) => void;
+}
+
+const TodoItemsList: React.SFC<ITodoItemsListProps> = (props) => {
   const dispatch = useDispatch();
   const { data, error } = useSelector(actions.todoItems.list.dataAndErrorSelector({ dispatch, invokeAtFirstRun: true }));
 
@@ -17,6 +21,14 @@ const TodoItemsList: React.SFC = () => {
 
   const handleDelete = (row: ITodoItemEntry) => (event: React.MouseEvent<HTMLButtonElement>) => {
     actions.todoItems.remove(row)(dispatch);
+  };
+
+  const handleClickTitle = (row: ITodoItemEntry) => (event: React.MouseEvent<HTMLElement>) => {
+    event.preventDefault();
+
+    if (props.onRowSelected) {
+      props.onRowSelected(row);
+    }
   };
 
   return (
@@ -37,8 +49,8 @@ const TodoItemsList: React.SFC = () => {
                   onChange={handleCheckboxToggle(row)}
                 />
               </div>
-              <div className="col-9 text-left">
-                <span style={{ textDecoration: (row.checked ? 'line-through' : 'inherit') }}>
+              <div className="col-9 text-left" onClick={handleClickTitle(row)} style={{cursor: 'pointer'}}>
+                <span style={{ textDecoration: (row.checked ? 'line-through' : 'inherit') }} onClick={handleClickTitle(row)}>
                   {row.title}
                 </span>
               </div>
